@@ -1,3 +1,6 @@
+ARG UID="1000"
+ARG USERNAME="go"
+
 # Copyright 2018 ThoughtWorks, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +21,7 @@
 ###############################################################################################
 
 FROM alpine:latest as gocd-server-unzip
-ARG UID=1000
+ARG UID
 RUN \
   apk --no-cache upgrade && \
   apk add --no-cache curl && \
@@ -47,7 +50,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 ENV GO_JAVA_HOME="/gocd-jre"
 
-ARG UID=1000
+ARG UID
 
 RUN \
 # add mode and permissions for files we added above
@@ -56,7 +59,7 @@ RUN \
 # add our user and group first to make sure their IDs get assigned consistently,
 # regardless of whatever dependencies get added
 # add user to root group for gocd to work on openshift
-  adduser -D -u ${UID} -s /bin/bash -G root go && \
+  adduser -D -u ${UID} -s /bin/bash -G root ${USERNAME} && \
   apk add --no-cache cyrus-sasl cyrus-sasl-plain && \
   apk --no-cache upgrade && \
   apk add --no-cache nss git mercurial subversion openssh-client bash curl procps && \
@@ -113,4 +116,4 @@ RUN chown -R go:root /docker-entrypoint.d /go-working-dir /godata /docker-entryp
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-USER go
+USER ${USERNAME}
