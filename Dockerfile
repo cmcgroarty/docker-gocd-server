@@ -51,6 +51,7 @@ ENV LC_ALL en_US.UTF-8
 ENV GO_JAVA_HOME="/gocd-jre"
 
 ARG UID
+ARG USERNAME
 
 RUN \
 # add mode and permissions for files we added above
@@ -107,9 +108,9 @@ ADD docker-entrypoint.sh /
 
 COPY --from=gocd-server-unzip /go-server /go-server
 # ensure that logs are printed to console output
-COPY --chown=go:root logback-include.xml /go-server/config/logback-include.xml
-COPY --chown=go:root install-gocd-plugins /usr/local/sbin/install-gocd-plugins
-COPY --chown=go:root git-clone-config /usr/local/sbin/git-clone-config
+COPY --chown=${USERNAME}:root logback-include.xml /go-server/config/logback-include.xml
+COPY --chown=${USERNAME}:root install-gocd-plugins /usr/local/sbin/install-gocd-plugins
+COPY --chown=${USERNAME}:root git-clone-config /usr/local/sbin/git-clone-config
 
 RUN chown -R ${USERNAME}:root /docker-entrypoint.d /go-working-dir /godata /docker-entrypoint.sh \
     && chmod -R g=u /docker-entrypoint.d /go-working-dir /godata /docker-entrypoint.sh
