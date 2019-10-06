@@ -111,7 +111,7 @@ COPY --chown=go:root logback-include.xml /go-server/config/logback-include.xml
 COPY --chown=go:root install-gocd-plugins /usr/local/sbin/install-gocd-plugins
 COPY --chown=go:root git-clone-config /usr/local/sbin/git-clone-config
 
-RUN chown -R go:root /docker-entrypoint.d /go-working-dir /godata /docker-entrypoint.sh \
+RUN chown -R ${USERNAME}:root /docker-entrypoint.d /go-working-dir /godata /docker-entrypoint.sh \
     && chmod -R g=u /docker-entrypoint.d /go-working-dir /godata /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
