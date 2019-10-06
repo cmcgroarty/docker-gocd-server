@@ -56,8 +56,8 @@ RUN \
 # add our user and group first to make sure their IDs get assigned consistently,
 # regardless of whatever dependencies get added
 # add user to root group for gocd to work on openshift
-  addgroup -g 998 docker && \
-  adduser -D -u ${UID} -s /bin/bash -G root,docker gocd && \
+  addgroup --gid 998 docker && \
+  adduser -D -u ${UID} -s /bin/bash -G root -G docker gocd && \
   apk add --no-cache cyrus-sasl cyrus-sasl-plain && \
   apk --no-cache upgrade && \
   apk add --no-cache nss git mercurial subversion openssh-client bash curl procps && \
