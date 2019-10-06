@@ -1,6 +1,3 @@
-ARG UID="1000"
-ARG USERNAME="go"
-
 # Copyright 2018 ThoughtWorks, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +18,7 @@ ARG USERNAME="go"
 ###############################################################################################
 
 FROM alpine:latest as gocd-server-unzip
-ARG UID
+ARG UID=1009
 RUN \
   apk --no-cache upgrade && \
   apk add --no-cache curl && \
@@ -50,8 +47,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 ENV GO_JAVA_HOME="/gocd-jre"
 
-ARG UID
-ARG USERNAME
+ARG UID=1009
 
 RUN \
 # add mode and permissions for files we added above
@@ -60,7 +56,7 @@ RUN \
 # add our user and group first to make sure their IDs get assigned consistently,
 # regardless of whatever dependencies get added
 # add user to root group for gocd to work on openshift
-  adduser -D -u ${UID} -s /bin/bash -G root ${USERNAME} && \
+  adduser -D -u ${UID} -s /bin/bash -G root gocd && \
   apk add --no-cache cyrus-sasl cyrus-sasl-plain && \
   apk --no-cache upgrade && \
   apk add --no-cache nss git mercurial subversion openssh-client bash curl procps && \
@@ -108,13 +104,13 @@ ADD docker-entrypoint.sh /
 
 COPY --from=gocd-server-unzip /go-server /go-server
 # ensure that logs are printed to console output
-COPY --chown=${USERNAME}:root logback-include.xml /go-server/config/logback-include.xml
-COPY --chown=${USERNAME}:root install-gocd-plugins /usr/local/sbin/install-gocd-plugins
-COPY --chown=${USERNAME}:root git-clone-config /usr/local/sbin/git-clone-config
+COPY --chown=gocd:root logback-include.xml /go-server/config/logback-include.xml
+COPY --chown=gocd:root install-gocd-plugins /usr/local/sbin/install-gocd-plugins
+COPY --chown=gocd:root git-clone-config /usr/local/sbin/git-clone-config
 
-RUN chown -R ${USERNAME}:root /docker-entrypoint.d /go-working-dir /godata /docker-entrypoint.sh \
+RUN chown -R gocd:root /docker-entrypoint.d /go-working-dir /godata /docker-entrypoint.sh \
     && chmod -R g=u /docker-entrypoint.d /go-working-dir /godata /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-USER ${USERNAME}
+USER gocd
